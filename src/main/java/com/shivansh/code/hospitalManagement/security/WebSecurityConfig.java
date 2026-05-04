@@ -1,6 +1,7 @@
 package com.shivansh.code.hospitalManagement.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -30,7 +32,10 @@ public class WebSecurityConfig {
 //                        .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth-> oauth.failureHandler((request, response, exception) -> {
+                    log.error("Oauth error : {}"+exception.getMessage());
+                }));
         return httpSecurity.build();
     }
 
