@@ -27,17 +27,17 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
-                .sessionManagement(sesionconfig -> sesionconfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/public/**","/auth/**").permitAll()
 //                        .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth-> oauth.failureHandler((request, response, exception) -> {
-                    log.error("Oauth error : {}"+exception.getMessage());
-                })
-                        .successHandler(oauth2SuccessHandler));
+                .oauth2Login(oauth->
+                        oauth.failureHandler((request, response, exception) -> {
+                                log.error("Oauth error : {}"+exception.getMessage());
+                        }).successHandler(oauth2SuccessHandler));
         return httpSecurity.build();
     }
 

@@ -3,7 +3,7 @@ package com.shivansh.code.hospitalManagement.controller;
 import com.shivansh.code.hospitalManagement.dto.LoginRequestDto;
 import com.shivansh.code.hospitalManagement.dto.LoginResponseDto;
 import com.shivansh.code.hospitalManagement.dto.SignUpResopnseDto;
-import com.shivansh.code.hospitalManagement.dto.SingUpRequestDto;
+import com.shivansh.code.hospitalManagement.dto.SignUpRequestDto;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.security.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignUpResopnseDto>>
-          signup(@RequestBody SingUpRequestDto signupRequestDto){
+          signup(@RequestBody SignUpRequestDto signupRequestDto){
         SignUpResopnseDto newSignUp =
                 authService.signUp(signupRequestDto);
         ApiResponse<SignUpResopnseDto> apiResponse =
