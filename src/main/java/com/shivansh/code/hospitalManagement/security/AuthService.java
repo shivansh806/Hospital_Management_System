@@ -4,8 +4,13 @@ import com.shivansh.code.hospitalManagement.dto.LoginRequestDto;
 import com.shivansh.code.hospitalManagement.dto.LoginResponseDto;
 import com.shivansh.code.hospitalManagement.dto.SignUpResopnseDto;
 import com.shivansh.code.hospitalManagement.dto.SignUpRequestDto;
+import com.shivansh.code.hospitalManagement.entity.Patient;
+import com.shivansh.code.hospitalManagement.entity.Role;
 import com.shivansh.code.hospitalManagement.entity.User;
 import com.shivansh.code.hospitalManagement.entity.type.AuthProviderType;
+import com.shivansh.code.hospitalManagement.entity.type.RoleType;
+import com.shivansh.code.hospitalManagement.repository.PatientRepository;
+import com.shivansh.code.hospitalManagement.repository.RoleRepository;
 import com.shivansh.code.hospitalManagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,6 +34,8 @@ public class AuthService {
     private final AuthUtil authUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final PatientRepository patientRepository;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto){
         Authentication authentication = authenticationManager.authenticate(
@@ -46,11 +55,25 @@ public class AuthService {
 
         if(user != null) throw new IllegalArgumentException("User already Exits");
 
+        Role patientRole = roleRepository
+                .findByRole(RoleType.ROLE_PATIENT)
+                .orElseThrow(()->new IllegalArgumentException("Role not found"));
+
         user = userRepository.save(User.builder()
                 .username(signUpRequestDto.getUsername())
                 .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
+                .roles(Set.of(patientRole))
                 .build()
         );
+
+        Patient patient = Patient.builder()
+                .user(user)
+                .email(signUpRequestDto.getEmail())
+                .gender(signUpRequestDto.getGender())
+                .name(signUpRequestDto.getUsername())
+                .build();
+        patientRepository.save(patient);
+
         return new SignUpResopnseDto(user.getId(), user.getUsername());
     }
 
@@ -66,14 +89,27 @@ public class AuthService {
         if(user == null && emailUser == null){
             //sign part
             String username = authUtil.getUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
+
+            Role patientRole = roleRepository
+                    .findByRole(RoleType.ROLE_PATIENT)
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+
             user = userRepository.save(
                     User.builder()
                     .username(username)
                     .providerId(providerId)
                     .providerType(authProviderType)
                     .password(null)
+                            .roles(Set.of(patientRole))
                     .build()
             );
+
+            Patient patient = Patient.builder()
+                    .user(user)
+                    .email(email)
+                    .build();
+            patientRepository.save(patient);
+
         }else if(user != null){
             if( email != null && !email.isBlank() && !email.equals(user.getUsername())){
                 user.setUsername(email);

@@ -3,9 +3,7 @@ package com.shivansh.code.hospitalManagement.entity;
 import com.shivansh.code.hospitalManagement.entity.type.BloodGroup;
 import com.shivansh.code.hospitalManagement.entity.type.GenderType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 
@@ -27,7 +25,9 @@ import java.util.List;
                 @Index(name = "idx_patient_birth_date", columnList = "birthDate")
         }
 )
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Patient {
 
     @Id
@@ -41,6 +41,10 @@ public class Patient {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
