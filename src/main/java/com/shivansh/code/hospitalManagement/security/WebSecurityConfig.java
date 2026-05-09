@@ -34,10 +34,11 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth->
-                        oauth.failureHandler((request, response, exception) -> {
+                .oauth2Login(oauth-> oauth
+                        .failureHandler((request, response, exception) -> {
                                 log.error("Oauth error : {}"+exception.getMessage());
-                        }).successHandler(oauth2SuccessHandler));
+                        })
+                        .successHandler(oauth2SuccessHandler));
         return httpSecurity.build();
     }
 
