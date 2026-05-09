@@ -1,15 +1,16 @@
 package com.shivansh.code.hospitalManagement.controller;
 
+import com.shivansh.code.hospitalManagement.dto.DoctorRequestDto;
+import com.shivansh.code.hospitalManagement.dto.DoctorResponseDto;
 import com.shivansh.code.hospitalManagement.dto.PatientResponseDto;
+import com.shivansh.code.hospitalManagement.response.ApiResponse;
+import com.shivansh.code.hospitalManagement.service.AdminService;
 import com.shivansh.code.hospitalManagement.service.PatientServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final PatientServices patientServices;
+    private final AdminService adminService;
 
     @GetMapping("/patients")
     public ResponseEntity<Page<PatientResponseDto>> findAllPatients(
@@ -24,6 +26,14 @@ public class AdminController {
             @RequestParam(value = "Size", defaultValue = "2") Integer pageSize
     ){
         return ResponseEntity.status(HttpStatus.OK).body(patientServices.getAllPatients(pageNumber, pageSize));
+    }
+
+    @PostMapping("/createDoctor")
+    public ResponseEntity<ApiResponse<DoctorResponseDto>> addDoctor(@RequestBody DoctorRequestDto doctorRequestDto){
+        DoctorResponseDto response = adminService.createDoctor(doctorRequestDto);
+        ApiResponse<DoctorResponseDto> apiResponse =
+                new ApiResponse<>("Doctor Created Successfully..", response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
 }
