@@ -6,6 +6,7 @@ import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.service.AppointmentServices;
 import com.shivansh.code.hospitalManagement.service.InsuranceServices;
 import com.shivansh.code.hospitalManagement.service.PatientServices;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class PatientController {
 
     @PostMapping("/{patientId}/insurance")
     public ResponseEntity<ApiResponse<InsuranceResponseDto>> createInsurance(
+            @Valid
             @PathVariable Long patientId,
             @RequestBody InsuranceRequestDto insuranceRequestDto
     ){

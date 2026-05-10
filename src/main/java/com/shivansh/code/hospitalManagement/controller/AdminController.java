@@ -6,6 +6,7 @@ import com.shivansh.code.hospitalManagement.dto.PatientResponseDto;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.service.AdminService;
 import com.shivansh.code.hospitalManagement.service.PatientServices;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class AdminController {
     }
 
     @PostMapping("/createDoctor")
-    public ResponseEntity<ApiResponse<DoctorResponseDto>> addDoctor(@RequestBody DoctorRequestDto doctorRequestDto){
+    public ResponseEntity<ApiResponse<DoctorResponseDto>> addDoctor(@Valid @RequestBody DoctorRequestDto doctorRequestDto){
         DoctorResponseDto response = adminService.createDoctor(doctorRequestDto);
         ApiResponse<DoctorResponseDto> apiResponse =
                 new ApiResponse<>("Doctor Created Successfully..", response);

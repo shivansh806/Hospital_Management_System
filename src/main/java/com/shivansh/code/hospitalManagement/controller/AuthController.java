@@ -6,6 +6,7 @@ import com.shivansh.code.hospitalManagement.dto.SignUpResopnseDto;
 import com.shivansh.code.hospitalManagement.dto.SignUpRequestDto;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.security.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto){
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginRequestDto){
         LoginResponseDto loginRes = authService.login(loginRequestDto);
         ApiResponse<LoginResponseDto> apiResponse =
                 new ApiResponse<>("Login Successfully", loginRes);
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignUpResopnseDto>>
-          signup(@RequestBody SignUpRequestDto signupRequestDto){
+          signup(@Valid  @RequestBody SignUpRequestDto signupRequestDto){
         SignUpResopnseDto newSignUp =
                 authService.signUp(signupRequestDto);
         ApiResponse<SignUpResopnseDto> apiResponse =

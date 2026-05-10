@@ -4,6 +4,7 @@ import com.shivansh.code.hospitalManagement.dto.AppointmentResponseDto;
 import com.shivansh.code.hospitalManagement.dto.CreateAppointmentRequestDto;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.service.AppointmentServices;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class AppointmentController {
     private final AppointmentServices appointmentServices;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<AppointmentResponseDto>> createNewAppointment(@RequestBody CreateAppointmentRequestDto createAppointmentRequestDto){
+    public ResponseEntity<ApiResponse<AppointmentResponseDto>> createNewAppointment(@Valid @RequestBody CreateAppointmentRequestDto createAppointmentRequestDto){
         AppointmentResponseDto appointment = appointmentServices.createNewAppointment(createAppointmentRequestDto);
         ApiResponse<AppointmentResponseDto> apiResponse =
                 new ApiResponse<>("Appointment Created Sucessfully", appointment);
