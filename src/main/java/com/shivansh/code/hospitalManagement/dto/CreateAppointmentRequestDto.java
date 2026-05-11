@@ -12,9 +12,6 @@ public class CreateAppointmentRequestDto {
     @NotNull(message = "Doctor id is required")
     private Long doctorId;
 
-    @NotNull(message = "Patient id is required")
-    private Long patientId;
-
     @NotNull(message = "Appointment time is required")
     @Future(message = "Appointment time must be in the future")
     private LocalDateTime appointmentTime;
