@@ -74,6 +74,7 @@ public class DataInitializer {
                     .orElseThrow();
 
             patientRole.setPermissions(Set.of(
+                    PermissionType.PATIENT_READ,
                     PermissionType.APPOINTMENT_CREATE,
                     PermissionType.APPOINTMENT_READ,
                     PermissionType.INSURANCE_READ

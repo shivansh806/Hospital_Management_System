@@ -34,7 +34,7 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 40)
+    @Column(length = 40)
     private String name;
 
     private LocalDate birthDate;
@@ -47,7 +47,6 @@ public class Patient {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private GenderType gender;
 
     @CreationTimestamp

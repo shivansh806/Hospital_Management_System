@@ -37,7 +37,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             path.startsWith("/auth/login") ||
                             path.startsWith("/auth/signup") ||
                             path.startsWith("/swagger-ui") ||
-                            path.startsWith("/v3/api-docs")
+                            path.startsWith("/v3/api-docs") ||
+                            path.startsWith("/oauth2") ||
+                            path.startsWith("/login/oauth2")
             ) {
                 filterChain.doFilter(request, response);
                 return;
@@ -48,17 +50,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+
             String token = requestTokenHeader.substring(7);
             String userName = authUtil.getUsernameFromToken(token);
-            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userName != null) {
                 User user = userRepository.findByUsername(userName).orElseThrow();
-                System.out.println(user.getAuthorities());
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                         = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
             filterChain.doFilter(request, response);
         }catch (Exception ex){
+             log.info("Exception in JWT filter: {}", ex.getMessage());
              handlerExceptionResolver.resolveException(request, response, null, ex);
         }
     }

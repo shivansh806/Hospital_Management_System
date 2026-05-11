@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.Set;
 
 @Service
@@ -67,7 +68,6 @@ public class AuthService {
         Patient patient = Patient.builder()
                 .user(user)
                 .email(signUpRequestDto.getEmail())
-                .gender(signUpRequestDto.getGender())
                 .name(signUpRequestDto.getUsername())
                 .build();
         patientRepository.save(patient);
@@ -82,7 +82,9 @@ public class AuthService {
 
         User user = userRepository.findByProviderIdAndProviderType(providerId, authProviderType).orElse(null);
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
         User emailUser = userRepository.findByUsername(email).orElse(null);
+
 
         if(user == null && emailUser == null){
             //sign part
@@ -91,6 +93,7 @@ public class AuthService {
             Role patientRole = roleRepository
                     .findByRole(RoleType.ROLE_PATIENT)
                     .orElseThrow(() -> new RuntimeException("Role not found"));
+
 
             user = userRepository.save(
                     User.builder()
@@ -104,13 +107,18 @@ public class AuthService {
 
             Patient patient = Patient.builder()
                     .user(user)
+                    .name(name)
                     .email(email)
                     .build();
             patientRepository.save(patient);
 
         }else if(user != null){
-            if( email != null && !email.isBlank() && !email.equals(user.getUsername())){
-                user.setUsername(email);
+            if(user.getRoles() == null || user.getRoles().isEmpty()){
+                Role patientRole = roleRepository
+                        .findByRole(RoleType.ROLE_PATIENT)
+                        .orElseThrow();
+
+                user.setRoles(Set.of(patientRole));
                 userRepository.save(user);
             }
         }else{

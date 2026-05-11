@@ -1,6 +1,7 @@
 package com.shivansh.code.hospitalManagement.controller;
 
 import com.shivansh.code.hospitalManagement.dto.*;
+import com.shivansh.code.hospitalManagement.entity.User;
 import com.shivansh.code.hospitalManagement.repository.PatientRepository;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.service.AppointmentServices;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,30 +23,32 @@ public class PatientController {
     private final InsuranceServices insuranceServices;
 
 
-    @GetMapping("/profile")
-    public ResponseEntity<PatientResponseDto> getPatientProfile(@RequestParam Long patientId){
-        return ResponseEntity.status(HttpStatus.OK).body(patientServices.getPatientById(patientId));
+    @GetMapping("/my-profile")
+    public ResponseEntity<PatientResponseDto> getPatientProfile(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.status(HttpStatus.OK).body(patientServices.getPatientById(user.getId()));
     }
 
-    @PostMapping("/{patientId}/insurance")
+    @PostMapping("/my-insurance")
     public ResponseEntity<ApiResponse<InsuranceResponseDto>> createInsurance(
             @Valid
-            @PathVariable Long patientId,
-            @RequestBody InsuranceRequestDto insuranceRequestDto
+            @RequestBody InsuranceRequestDto insuranceRequestDto,
+            Authentication authentication
     ){
-        InsuranceResponseDto insurance = insuranceServices.createInsurance(insuranceRequestDto, patientId);
+        User user = (User) authentication.getPrincipal();
+        InsuranceResponseDto insurance = insuranceServices.createInsurance(insuranceRequestDto, user.getId());
 
         ApiResponse<InsuranceResponseDto> apiResponse =
                 new ApiResponse<>("Insurance Created Successfully", insurance);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
-    @DeleteMapping("/{patientId}/insurance")
+    @DeleteMapping("/my-insurance")
     public ResponseEntity<ApiResponse<InsuranceResponseDto>> deleteInsurance(
-            @PathVariable Long patientId
+            Authentication authentication
     ){
-
-        InsuranceResponseDto insurance = insuranceServices.deleteInsurance(patientId);
+        User user = (User) authentication.getPrincipal();
+        InsuranceResponseDto insurance = insuranceServices.deleteInsurance(user.getId());
 
         ApiResponse<InsuranceResponseDto> apiResponse =
                 new ApiResponse<>("Insurance Deleted Successfully", insurance);

@@ -15,11 +15,14 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     Patient findByName(String name);
     Patient findByBirthDate(LocalDate localDate);
+
+    Optional<Patient> findByUser_Id(Long userId);
 
     List<Patient> findByBirthDateOrEmail(LocalDate localDate, String email);
 

@@ -47,12 +47,20 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .oauth2Login(oauth-> oauth
-//                        .failureHandler((request, response, exception) -> {
-//                            log.error("OAuth2 login failed: {}", exception.getMessage());
-//                        })
-//                        .successHandler(oauth2SuccessHandler))
-                ;
+                .oauth2Login(oauth-> oauth
+                        .failureHandler((request, response, exception) -> {
+                            log.error("OAuth2 login failed: {}", exception.getMessage());
+                        })
+                        .successHandler(oauth2SuccessHandler)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(
+                                    HttpServletResponse.SC_UNAUTHORIZED,
+                                    "Unauthorized"
+                            );
+                        })
+                );
         return httpSecurity.build();
     }
 

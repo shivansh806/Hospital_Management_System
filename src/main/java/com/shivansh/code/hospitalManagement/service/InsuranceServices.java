@@ -23,9 +23,9 @@ public class InsuranceServices {
 
 
     @Transactional
-    public InsuranceResponseDto createInsurance(InsuranceRequestDto insurance, Long patientId){
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(()-> new EntityNotFoundException("Patient not found by id"+patientId));
+    public InsuranceResponseDto createInsurance(InsuranceRequestDto insurance, Long userId){
+        Patient patient = patientRepository.findByUser_Id(userId)
+                .orElseThrow(()-> new EntityNotFoundException("Patient not found by id"+userId));
 
         Insurance newInsurance = Insurance.builder()
                         .policyNumber(insurance.getPolicyNumber())
@@ -40,13 +40,11 @@ public class InsuranceServices {
     }
 
     @Transactional
-    public InsuranceResponseDto deleteInsurance(Long patientId){
-        Patient patient = patientRepository.findById(patientId)
+    public InsuranceResponseDto deleteInsurance(Long userId){
+        Patient patient = patientRepository.findByUser_Id(userId)
                 .orElseThrow();
-
         Insurance insurance = patient.getInsurance();
         patient.setInsurance(null);
-
         return modelMapper.map(insurance, InsuranceResponseDto.class);
     }
 
