@@ -31,8 +31,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             log.info("incoming request: {}", request.getRequestURI());
-            System.out.println("JWT FILTER CALLED");
-
+            String path = request.getRequestURI();
+            if (
+                    path.startsWith("/auth/refresh") ||
+                            path.startsWith("/auth/login") ||
+                            path.startsWith("/auth/signup") ||
+                            path.startsWith("/swagger-ui") ||
+                            path.startsWith("/v3/api-docs")
+            ) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            log.info("JWT filter Called");
             final String requestTokenHeader = request.getHeader("Authorization");
             if (requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
