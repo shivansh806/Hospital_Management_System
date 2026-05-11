@@ -1,9 +1,6 @@
 package com.shivansh.code.hospitalManagement.controller;
 
-import com.shivansh.code.hospitalManagement.dto.LoginRequestDto;
-import com.shivansh.code.hospitalManagement.dto.LoginResponseDto;
-import com.shivansh.code.hospitalManagement.dto.SignUpResopnseDto;
-import com.shivansh.code.hospitalManagement.dto.SignUpRequestDto;
+import com.shivansh.code.hospitalManagement.dto.*;
 import com.shivansh.code.hospitalManagement.response.ApiResponse;
 import com.shivansh.code.hospitalManagement.security.AuthService;
 import jakarta.validation.Valid;
@@ -39,5 +36,15 @@ public class AuthController {
         ApiResponse<SignUpResopnseDto> apiResponse =
                 new ApiResponse<>("SignUp Successfully.", newSignUp);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<RefreshTokenResponseDto>> refreshToken(
+            @Valid
+            @RequestBody RefreshTokenRequestDto request){
+        RefreshTokenResponseDto response = authService.refreshAccessToken(request);
+        ApiResponse<RefreshTokenResponseDto> apiResponse =
+                new ApiResponse<>("Access token refreshed successfully.", response);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }

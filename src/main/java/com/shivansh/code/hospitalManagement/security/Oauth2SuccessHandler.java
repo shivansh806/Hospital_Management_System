@@ -31,10 +31,12 @@ public class Oauth2SuccessHandler  implements AuthenticationSuccessHandler {
 
         String registrationId = token.getAuthorizedClientRegistrationId();
 
-        ResponseEntity<LoginResponseDto> loginResponse = authService.handleOAuth2LoginRequest(oAuth2User,registrationId);
+        LoginResponseDto loginResponse = authService.handleOAuth2LoginRequest(oAuth2User,registrationId);
 
-        response.setStatus(loginResponse.getStatusCode().value());
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(loginResponse.getBody()));
+        response.getWriter().write(
+                objectMapper.writeValueAsString(loginResponse)
+        );
     }
 }

@@ -1,9 +1,6 @@
 package com.shivansh.code.hospitalManagement.security;
 
-import com.shivansh.code.hospitalManagement.dto.LoginRequestDto;
-import com.shivansh.code.hospitalManagement.dto.LoginResponseDto;
-import com.shivansh.code.hospitalManagement.dto.SignUpResopnseDto;
-import com.shivansh.code.hospitalManagement.dto.SignUpRequestDto;
+import com.shivansh.code.hospitalManagement.dto.*;
 import com.shivansh.code.hospitalManagement.entity.Patient;
 import com.shivansh.code.hospitalManagement.entity.Role;
 import com.shivansh.code.hospitalManagement.entity.User;
@@ -44,9 +41,10 @@ public class AuthService {
 
         User user = (User) authentication.getPrincipal();
 
-        String token = authUtil.generateAccessToken(user);
+        String accessToken = authUtil.generateAccessToken(user);
+        String refreshToken = authUtil.generateRefreshToken(user);
 
-        return new LoginResponseDto(token, user.getId());
+        return new LoginResponseDto(accessToken, refreshToken, user.getId());
     }
 
     public SignUpResopnseDto signUp(SignUpRequestDto signUpRequestDto){
@@ -78,7 +76,7 @@ public class AuthService {
     }
 
     @Transactional
-    public ResponseEntity<LoginResponseDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
+    public LoginResponseDto handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
         AuthProviderType authProviderType = authUtil.getAuthProviderTypeFromRegistrationId(registrationId);
         String providerId = authUtil.getProviderIdFromOAuth2User(oAuth2User, registrationId);
 
@@ -119,7 +117,19 @@ public class AuthService {
             throw new BadCredentialsException("This email is already registered with provider "+emailUser.getProviderType());
         }
 
-        LoginResponseDto loginResponseDto = new LoginResponseDto(authUtil.generateAccessToken(user), user.getId());
-        return ResponseEntity.ok(loginResponseDto);
+        return new LoginResponseDto(authUtil.generateAccessToken(user), authUtil.generateRefreshToken(user), user.getId());
+    }
+
+    public RefreshTokenResponseDto refreshAccessToken(
+            RefreshTokenRequestDto request){
+
+        String refreshToken = request.getRefreshToken();
+        String username = authUtil.getUsernameFromToken(refreshToken);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        String newAccessToken = authUtil.generateAccessToken(user);
+        return new RefreshTokenResponseDto(newAccessToken);
     }
 }

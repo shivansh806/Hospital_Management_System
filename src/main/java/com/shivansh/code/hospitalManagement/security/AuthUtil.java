@@ -34,6 +34,14 @@ public class AuthUtil {
                 .signWith(getSecretKey())
                 .compact();
     }
+    public String generateRefreshToken(User user){
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
+                .signWith(getSecretKey())
+                .compact();
+    }
 
     public String getUsernameFromToken(String token){
         Claims claims = Jwts.parser()
