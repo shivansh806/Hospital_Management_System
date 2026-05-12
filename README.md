@@ -17,7 +17,7 @@ The system provides authentication, role-based authorization, patient profile ma
 - [Getting Started](#getting-started)
 - [Architecture](#️-architecture)
 - [Security Design](#-security-design)
-- [Future Enhancements](#future-enhancements
+- [Future Enhancements](#future-enhancements)
 - [Author](#-author)
 
 ---
