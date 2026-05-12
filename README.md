@@ -1,6 +1,8 @@
 # Hospital Management System
 
-A comprehensive **Spring Boot REST API** for managing hospital operations including patients, doctors, appointments, insurance, and departments.
+A secure and scalable Hospital Management REST API built using Spring Boot, Spring Security, JWT, OAuth2, and MySQL.
+
+The system provides authentication, role-based authorization, patient profile management, doctor management, appointment workflows, insurance handling, and secure resource ownership validation.
 
 ---
 
@@ -10,25 +12,35 @@ A comprehensive **Spring Boot REST API** for managing hospital operations includ
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Key Features](#key-features)
-- [Database Schema](#database-schema)
+- [Security Features](#-security-features)
 - [API Endpoints](#api-endpoints)
 - [Getting Started](#getting-started)
-- [Usage Examples](#usage-examples)
-- [Architecture](#architecture)
-- [Future Enhancements](#future-enhancements)
+- [Architecture](#️-architecture)
+- [Security Design](#-security-design)
+- [Future Enhancements](#future-enhancements
+- [Author](#-author)
 
 ---
 
 ## 🎯 Project Overview
 
-The Hospital Management System is a robust REST API designed to streamline hospital operations. It provides comprehensive management of:
-- Patient records and medical history
-- Doctor profiles and specializations
-- Appointment scheduling and management
-- Insurance information tracking
-- Department organization and management
+The Hospital Management System is a backend-focused application built using Spring Boot and Java 21 following clean architecture principles.
 
-Built with **Spring Boot 3.4.5** and **Java 21**, this application leverages modern Java features and Spring ecosystem best practices.
+This project provides:
+
+- Secure authentication system using JWT
+- Refresh Token Authentication
+- OAuth2 login integration
+- Role-based authorization
+- Patient profile management
+- Insurance management
+- Appointment booking system
+- Doctor appointment reassignment
+- Secure ownership validation
+- Centralized exception handling
+- Swagger/OpenAPI documentation
+
+The application follows a layered architecture with Controllers, Services, Repositories, DTOs, and Security layers for scalability and maintainability.
 
 ---
 
@@ -38,11 +50,15 @@ Built with **Spring Boot 3.4.5** and **Java 21**, this application leverages mod
 |-----------|-----------|
 | **Framework** | Spring Boot 3.4.5 |
 | **Language** | Java 21 |
+| **Security** | Spring Security + JWT |
+| **Authentication** | OAuth2 + JWT |
 | **Build Tool** | Maven |
 | **Database** | MySQL 8.0+ |
 | **ORM** | JPA/Hibernate |
+| **API Documentation** | Swagger / OpenAPI |
+| **Boilerplate Reduction** | Lombok |
 | **Data Mapping** | ModelMapper 3.2.0 |
-| **Code Generator** | Lombok |
+| **Architecture** | Layered Architecture |
 | **API Format** | REST (JSON) |
 
 ---
@@ -51,46 +67,32 @@ Built with **Spring Boot 3.4.5** and **Java 21**, this application leverages mod
 
 ```
 src/
+│
 ├── main/
 │   ├── java/com/shivansh/code/hospitalManagement/
-│   │   ├── HospitalManagementApplication.java          # Spring Boot Entry Point
-│   │   ├── controller/                                  # REST Controllers
-│   │   │   ├── PatientController.java
-│   │   │   ├── AppointmentController.java
-│   │   │   ├── AdminController.java
-│   │   │   └── DoctorController.java
-│   │   ├── service/                                     # Business Logic Layer
-│   │   │   ├── PatientServices.java
-│   │   │   ├── AppointmentServices.java
-│   │   │   └── InsuranceServices.java
-│   │   ├── repository/                                  # Data Access Layer
-│   │   │   ├── PatientRepository.java
-│   │   │   ├── DoctorRepository.java
-│   │   │   ├── AppointmentRepository.java
-│   │   │   ├── InsuranceRepository.java
-│   │   │   └── DepartmentRepository.java
-│   │   ├── entity/                                      # JPA Entities
-│   │   │   ├── Patient.java
-│   │   │   ├── Doctor.java
-│   │   │   ├── Appointment.java
-│   │   │   ├── Insurance.java
-│   │   │   └── Department.java
-│   │   ├── dto/                                         # Data Transfer Objects
-│   │   │   ├── PatientResponseDto.java
-│   │   │   ├── AppointmentResponseDto.java
-│   │   │   ├── CreateAppointmentRequestDto.java
-│   │   │   └── InsuranceRequestDto.java
-│   │   ├── response/                                    # Response Wrapper Classes
-│   │   │   └── ApiResponse.java
-│   │   └── entity/type/                                 # Enums
-│   │       ├── BloodGroup.java
-│   │       └── GenderType.java
-│   └── resources/
-│       └── application.properties                        # Configuration
-└── test/
-    └── java/                                             # Unit & Integration Tests
-
-pom.xml                                                   # Maven Dependencies
+│   │
+│   ├── config/                 # Application & Swagger Configurations
+│   │
+│   ├── controller/             # REST API Controllers
+│   │
+│   ├── dto/                    # Request & Response DTOs
+│   │
+│   ├── entity/                 # JPA Entities
+│   │
+│   ├── error/                  # Global Exception Handling
+│   │
+│   ├── repository/             # Database Access Layer
+│   │
+│   ├── response/               # Standard API Response Wrappers
+│   │
+│   ├── security/               # JWT, OAuth2 & Spring Security
+│   │
+│   ├── service/                # Business Logic Layer
+│   │
+│   └── HospitalManagementApplication.java
+│
+└── resources/
+    ├── application.properties
 ```
 
 ---
@@ -98,22 +100,24 @@ pom.xml                                                   # Maven Dependencies
 ## ✨ Key Features
 
 ### 1. **Patient Management**
-- Create and retrieve patient profiles
-- Track patient blood groups and demographics
-- Manage patient appointments and insurance
-- Query patients by various criteria
+- Secure patient profile retrieval
+- Patient profile update
+- Insurance add/remove APIs
+- Secure patient data access
+- Authenticated /me APIs
 
 ### 2. **Doctor Management**
-- Maintain doctor profiles with specialization
-- Track doctor-department associations
-- View doctors by department
-- Manage doctor availability
+- Create doctor profiles
+- Fetch doctor profile
+- Fetch logged-in doctor appointments
+- Reassign appointments to another doctor
 
-### 3. **Appointment Scheduling**
-- Create new appointments between patients and doctors
-- Reassign appointments to different doctors
-- Track appointment reasons and timestamps
-- View appointment history
+### 3. **Appointment Management**
+- Book appointments
+- Fetch logged-in patient appointments
+- Delete appointments
+- Doctor appointment reassignment
+- Ownership validation for appointments
 
 ### 4. **Insurance Management**
 - Link insurance policies to patients
@@ -121,112 +125,87 @@ pom.xml                                                   # Maven Dependencies
 - Manage insurance provider information
 - Track insurance creation timestamps
 
-### 5. **Department Organization**
-- Organize doctors by departments
-- Assign department head doctors
-- Manage department-doctor relationships
-- Track department information
+### 5. **Authentication & Authorization**
+- User Signup & Login
+- JWT-based Authentication
+- Refresh Token Support
+- OAuth2 Login Integration (Google/GitHub)
+- Role-Based Access Control (RBAC)
+- Method-Level Security using @PreAuthorize
+- Protected API Endpoints
+- Stateless Authentication
+- Custom Security Configuration
 
-### 6. **Admin Dashboard**
-- View all patients with pagination
-- Monitor system-wide statistics
-- Access detailed patient records
+### 6. **Exception Handling**
+- Global Exception Handler
+- Standardized API error responses
+- Clean error messaging structure
 
+### 7. **API Documentation**
+- Swagger/OpenAPI Integration
+- Interactive API Testing
+- Endpoint categorization
+  
 ---
 
-## 🗄️ Database Schema
+## 🔒 Security Features
 
-### Patient Entity
-```
-┌─────────────────────────────┐
-│         PATIENT             │
-├─────────────────────────────┤
-│ id (PK)                     │
-│ name                        │
-│ birthDate                   │
-│ email (UNIQUE)              │
-│ gender (ENUM)               │
-│ bloodGroup (ENUM)           │
-│ createdAt (TIMESTAMP)       │
-│ insurance_id (FK)           │
-│ appointments (ONE-TO-MANY)  │
-└─────────────────────────────┘
-```
-
-### Doctor Entity
-```
-┌──────────────────────────────┐
-│         DOCTOR               │
-├──────────────────────────────┤
-│ id (PK)                      │
-│ name                         │
-│ specialization               │
-│ email (UNIQUE)               │
-│ departments (MANY-TO-MANY)   │
-│ appointments (ONE-TO-MANY)   │
-└──────────────────────────────┘
-```
-
-### Appointment Entity
-```
-┌────────────────────────────┐
-│      APPOINTMENT           │
-├────────────────────────────┤
-│ id (PK)                    │
-│ appointmentTime            │
-│ reason                     │
-│ patient_id (FK)            │
-│ doctor_id (FK)             │
-└────────────────────────────┘
-```
-
-### Insurance Entity
-```
-┌────────────────────────────┐
-│      INSURANCE             │
-├────────────────────────────┤
-│ id (PK)                    │
-│ policyNumber (UNIQUE)      │
-│ provider                   │
-│ validUntil                 │
-│ createdAt (TIMESTAMP)      │
-│ patient_id (FK)            │
-└────────────────────────────┘
-```
-
-### Department Entity
-```
-┌────────────────────────────┐
-│     DEPARTMENT             │
-├────────────────────────────┤
-│ id (PK)                    │
-│ name (UNIQUE)              │
-│ headDoctor_id (FK)         │
-│ doctors (MANY-TO-MANY)     │
-└────────────────────────────┘
-```
+- Spring Security Integration
+- JWT Authentication Filter
+- OAuth2 Success Handler
+- Stateless Session Management
+- Method-Level Authorization
+- Role-Based Access Control
+- Ownership Validation
+- Secure Password Encoding
+- Authenticated User Context
 
 ---
 
 ## 🔌 API Endpoints
 
+### Authentication APIs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/signup` | Create a new user |
+| POST | `/auth/login` | Login user |
+| POST | `/auth/refresh` | Generate new access token |
+| GET | `/oauth2/authorization/google` | Google OAuth login |
+| GET | `/oauth2/authorization/github` | Github OAuth login |
+
+
 ### Patient Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/patients/profile` | Get patient profile (hardcoded ID: 2) |
-| POST | `/patients/{patientId}/insurance` | Add insurance to patient |
-| DELETE | `/patients/{patientId}/insurance` | Remove insurance from patient |
+| GET | `/patients/my-profile` | Get logged-in patient profile |
+| PATCH | `/patients/my-profile` | Update patient profile |
+| POST | `/patients/my-insurance` | Add insurance to patient |
+| DELETE | `/patients/my-insurance` | Remove insurance from patient |
 
 ### Appointment Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/appointments` | Create new appointment |
-| PATCH | `/appointments/{appointmentId}/doctor/{doctorId}` | Reassign appointment to different doctor |
+| POST | `/appointments/me` | Create new appointment |
+| GET | `/appointments/me` | Get logged-in patient appointments |
+| DELETE | `/appointments/{appointmentId}` | Delete own appointment | 
+| PATCH | `/appointments/{appointmentId}/reassign-doctor/{doctorId}` | Reassign appointment to different doctor |
+
+### Doctor APIs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/doctors/me` | Get logged-in doctor |
+| GET | `/doctors/appointments` | Get logged-in doctor appointment | 
+
+### Public APIs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/public/doctors` | Fetch public doctor list |
 
 ### Admin Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/admin/patients` | Get all patients with pagination |
+| POST | `/admin/createDoctor` | Create Doctor |
 
 **Query Parameters for `/admin/patients`:**
 - `page`: Page number (default: 0)
@@ -278,286 +257,60 @@ pom.xml                                                   # Maven Dependencies
 
 ---
 
-## 📝 Usage Examples
+##  Architecture
 
-### 1. Get Patient Profile
-```bash
-curl -X GET http://localhost:8080/patients/profile
-```
+The project follows a clean layered architecture:
 
-**Response:**
-```json
-{
-  "id": 2,
-  "name": "John Doe",
-  "gender": "MALE",
-  "birthDate": "1990-05-15",
-  "bloodGroup": "O_POSITIVE",
-  "insurance": null
-}
-```
+Controller Layer
+- Handles HTTP requests and API endpoints.
 
-### 2. Create Appointment
-```bash
-curl -X POST http://localhost:8080/appointments \
-  -H "Content-Type: application/json" \
-  -d '{
-    "patientId": 2,
-    "doctorId": 1,
-    "reason": "Regular checkup",
-    "appointmentTime": "2026-05-15T10:30:00"
-  }'
-```
+Service Layer
+- Contains business logic and application workflows.
 
-**Response:**
-```json
-{
-  "message": "Appointment Created Successfully",
-  "data": {
-    "id": 1,
-    "reason": "Regular checkup",
-    "appointmentTime": "2026-05-15T10:30:00"
-  }
-}
-```
+Repository Layer
+- Manages database operations using Spring Data JPA.
 
-### 3. Add Insurance
-```bash
-curl -X POST http://localhost:8080/patients/2/insurance \
-  -H "Content-Type: application/json" \
-  -d '{
-    "policyNumber": "POL123456",
-    "provider": "United Health",
-    "validUntil": "2027-12-31"
-  }'
-```
+DTO Layer
+- Transfers request and response data securely.
 
-**Response:**
-```json
-{
-  "message": "Insurance Created Successfully",
-  "data": {
-    "policyNumber": "POL123456",
-    "provider": "United Health",
-    "validUntil": "2027-12-31"
-  }
-}
-```
+Security Layer
+- Handles JWT authentication, OAuth2 login, and authorization.
 
-### 4. Reassign Appointment
-```bash
-curl -X PATCH http://localhost:8080/appointments/1/doctor/2
-```
+Exception Layer
+- Provides centralized exception handling and standardized API errors.
+  
+## Security Design
 
-**Response:**
-```json
-{
-  "message": "Appointment reassigned Successfully",
-  "data": {
-    "id": 1,
-    "reason": "Regular checkup",
-    "appointmentTime": "2026-05-15T10:30:00"
-  }
-}
-```
+This project follows a secure ownership-based access model.
 
-### 5. Get All Patients (Admin)
-```bash
-curl -X GET "http://localhost:8080/admin/patients?page=0&Size=5"
-```
+Patients
+- Can only access their own profile
+- Can only manage their own appointments
+- Cannot modify another patient's data
 
-**Response:**
-```json
-{
-  "content": [
-    {
-      "id": 1,
-      "name": "Jane Smith",
-      "gender": "FEMALE",
-      "birthDate": "1985-03-20",
-      "bloodGroup": "B_POSITIVE"
-    }
-  ],
-  "totalPages": 1,
-  "totalElements": 1,
-  "size": 5
-}
-```
-
----
-
-## 🏗️ Architecture
-
-The application follows a **3-Tier Layered Architecture**:
-
-```
-┌─────────────────────────────────────┐
-│   Presentation Layer (Controller)   │
-│  - REST endpoints                   │
-│  - Request/Response handling        │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│   Service Layer (Business Logic)    │
-│  - Business rules                   │
-│  - Data processing                  │
-│  - Transaction management           │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│   Repository Layer (Data Access)    │
-│  - Database queries                 │
-│  - JPA repositories                 │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│   Data Layer (Database)             │
-│  - MySQL database                   │
-└─────────────────────────────────────┘
-```
-
-**Benefits:**
-- ✅ Separation of concerns
-- ✅ Easy to test and maintain
-- ✅ Reusable components
-- ✅ Scalable architecture
+Doctors
+- Can only access their own appointments
+- Can only reassign appointments assigned to them
+  
+Authentication
+- JWT-based stateless authentication
+- OAuth2 login integration
+- Method-level RBAC authorization
 
 ---
 
 ## 🔮 Future Enhancements
 
-### 1. **JWT Authorization & Authentication**
-- [ ] Implement JWT token generation and validation
-  - User registration and login endpoints
-  - JWT token creation with configurable expiration
-  - Token refresh mechanism
-  - User role-based access control (RBAC)
-- [ ] Add security dependencies:
-  ```xml
-  <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-api</artifactId>
-    <version>0.12.3</version>
-  </dependency>
-  ```
-- [ ] Create `User` entity with roles and permissions
-- [ ] Implement `AuthController` for login/signup
-- [ ] Add JWT filter for request validation
-
-### 2. **Security Enhancements**
-- [ ] **Password Security**
-  - BCryptPasswordEncoder for password hashing
-  - Password strength validation rules
-  - Password change functionality
+- Appointment Status Tracking
+- Email Notifications
+- Appointment Scheduling Calendar
+- Video Consultation
+- Payment Gateway Integration
+- Prescription Management
+- Docker Deployment
+- Redis Caching
+- Microservices Migration
   
-- [ ] **API Security**
-  - HTTPS/SSL configuration
-  - CORS policy configuration
-  - Rate limiting to prevent abuse
-  - Input validation and sanitization
-  - CSRF protection
-  
-- [ ] **Authorization & Permissions**
-  - Role-based access control (RBAC)
-  - Admin, Doctor, Patient roles
-  - Method-level security with @PreAuthorize
-  - Resource-level access control
-  
-- [ ] **Audit & Logging**
-  - AuditLog entity to track changes
-  - User action logging
-  - Request/response logging
-  - Sensitive data masking in logs
-
-### 3. **Global Exception Handling**
-- [ ] Create centralized `GlobalExceptionHandler` class
-  - `@RestControllerAdvice` for global exception handling
-  - Custom exception classes:
-    ```java
-    - ResourceNotFoundException
-    - ValidationException
-    - UnauthorizedException
-    - ForbiddenException
-    - BadRequestException
-    - InternalServerException
-    ```
-  
-- [ ] Implement standardized error response format:
-  ```json
-  {
-    "timestamp": "2026-05-15T10:30:00Z",
-    "status": 404,
-    "error": "NOT_FOUND",
-    "message": "Patient not found with id 999",
-    "path": "/patients/999"
-  }
-  ```
-  
-- [ ] Handle common exceptions:
-  - `EntityNotFoundException`
-  - `DataIntegrityViolationException`
-  - `MethodArgumentNotValidException`
-  - `HttpMessageNotReadableException`
-  - `AccessDeniedException`
-  - Generic `Exception`
-  
-- [ ] Add custom validation annotations:
-  ```java
-  - @ValidEmail
-  - @ValidPhoneNumber
-  - @ValidAge
-  - @ValidDate
-  ```
-  
-- [ ] Implement request/response validation with `@Valid` and `@Validated`
-
-### 4. **Additional Enhancements**
-- [ ] **Billing & Payments**
-  - Invoice generation
-  - Payment processing integration (Stripe/PayPal)
-  - Billing history tracking
-  
-- [ ] **Notifications**
-  - Email notifications for appointments
-  - SMS reminders
-  - Push notifications
-  - Notification preferences management
-  
-- [ ] **Reporting & Analytics**
-  - Patient statistics dashboard
-  - Doctor performance metrics
-  - Department utilization reports
-  - Revenue reports
-  
-- [ ] **Appointment Management**
-  - Appointment cancellation
-  - Appointment rescheduling
-  - Doctor availability calendar
-  - Waiting list management
-  
-- [ ] **API Documentation**
-  - Swagger/Springdoc OpenAPI integration
-  - Detailed endpoint documentation
-  - Request/response examples
-  
-- [ ] **Testing**
-  - Unit tests for service layer
-  - Integration tests for API endpoints
-  - Test coverage > 80%
-  
-- [ ] **Caching**
-  - Redis integration for caching
-  - Cache invalidation strategies
-  
-- [ ] **Microservices** (Future)
-  - Refactor into microservices architecture
-  - Service mesh implementation
-  - API Gateway
-
 ---
 
 ## 📞 Support & Contribution
@@ -572,4 +325,4 @@ This project is open source and available under the MIT License.
 
 ---
 
-**Last Updated:** April 30, 2026
+**Last Updated:** May 12, 2026
