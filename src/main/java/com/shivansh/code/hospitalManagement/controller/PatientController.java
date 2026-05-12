@@ -29,6 +29,20 @@ public class PatientController {
         return ResponseEntity.status(HttpStatus.OK).body(patientServices.getPatientById(user.getId()));
     }
 
+    @PatchMapping("/my-profile")
+    public ResponseEntity<ApiResponse<PatientResponseDto>> updatePatientProfile(
+            @Valid
+            @RequestBody UpdatePatientProfileRequestDto request,
+            Authentication authentication
+    ){
+        User user = (User) authentication.getPrincipal();
+        PatientResponseDto updatedPatient = patientServices.updatePatientProfile(request, user
+                .getId());
+        ApiResponse<PatientResponseDto> apiResponse =
+                new ApiResponse<>("Patient Profile Updated Successfully", updatedPatient);
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
     @PostMapping("/my-insurance")
     public ResponseEntity<ApiResponse<InsuranceResponseDto>> createInsurance(
             @Valid
