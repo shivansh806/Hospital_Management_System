@@ -39,13 +39,12 @@ public class WebSecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/public/**","/auth/**").permitAll()
-                        // .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/admin/createDoctor")
-                        .hasAuthority("DOCTOR_WRITE")
-                        .requestMatchers(HttpMethod.GET, "/admin/patients")
-                        .hasAuthority("PATIENT_READ")
-                        .requestMatchers("/doctors/**").hasAnyRole("DOCTOR","ADMIN")
-                        .requestMatchers("/patients/**").hasRole("PATIENT")
+//                        .requestMatchers(HttpMethod.POST, "/admin/createDoctor")
+//                        .hasAuthority("DOCTOR_WRITE")
+//                        .requestMatchers(HttpMethod.GET, "/admin/patients")
+//                        .hasAuthority("PATIENT_READ")
+//                        .requestMatchers("/doctors/**").hasAnyRole("DOCTOR","ADMIN")
+//                        .requestMatchers("/patients/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,6 +59,12 @@ public class WebSecurityConfig {
                             response.sendError(
                                     HttpServletResponse.SC_UNAUTHORIZED,
                                     "Unauthorized"
+                            );
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendError(
+                                    HttpServletResponse.SC_FORBIDDEN,
+                                    "Forbidden"
                             );
                         })
                 );

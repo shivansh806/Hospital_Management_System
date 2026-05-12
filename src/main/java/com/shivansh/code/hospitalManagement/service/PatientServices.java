@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class PatientServices {
     private final PatientRepository patientRepository;
     private final ModelMapper modelMapper;
 
+    @PreAuthorize("hasRole('PATIENT')")
     @Transactional
     public PatientResponseDto getPatientById(Long userId){
         Patient patient = patientRepository
@@ -30,6 +32,7 @@ public class PatientServices {
         return modelMapper.map(patient, PatientResponseDto.class);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<PatientResponseDto> getAllPatients(Integer pageNumber, Integer pageSize){
         return patientRepository.findAll(PageRequest.of(pageNumber, pageSize))
                 .map(patient -> modelMapper.map(patient, PatientResponseDto.class));

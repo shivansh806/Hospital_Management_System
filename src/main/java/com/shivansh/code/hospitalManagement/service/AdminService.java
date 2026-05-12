@@ -12,6 +12,7 @@ import com.shivansh.code.hospitalManagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class AdminService {
     private final DoctorRepository doctorRepository;
     private final ModelMapper modelMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public DoctorResponseDto createDoctor(DoctorRequestDto request){
 

@@ -126,8 +126,9 @@ public class AppointmentServices {
         return modelMapper.map(appointment, AppointmentResponseDto.class);
     }
 
-    public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctorId) {
-        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow();
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
+    public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long userId) {
+        Doctor doctor = doctorRepository.findByUser_Id(userId).orElseThrow();
 
         return doctor.getAppointments()
                 .stream()

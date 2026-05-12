@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ public class InsuranceServices {
     private final ModelMapper modelMapper;
 
 
+    @PreAuthorize("hasRole('PATIENT')")
     @Transactional
     public InsuranceResponseDto createInsurance(InsuranceRequestDto insurance, Long userId){
         Patient patient = patientRepository.findByUser_Id(userId)
@@ -39,6 +41,7 @@ public class InsuranceServices {
         return modelMapper.map(newInsurance, InsuranceResponseDto.class);
     }
 
+    @PreAuthorize("hasRole('PATIENT')")
     @Transactional
     public InsuranceResponseDto deleteInsurance(Long userId){
         Patient patient = patientRepository.findByUser_Id(userId)

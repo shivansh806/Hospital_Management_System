@@ -5,6 +5,7 @@ import com.shivansh.code.hospitalManagement.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,10 @@ public class DoctorServices {
                 .toList();
     }
 
-
-
+    @PreAuthorize("hasRole('DOCTOR')")
+    public DoctorResponseDto getDoctorProfile(Long doctorId){
+        return doctorRepository.findByUser_Id(doctorId)
+                .map(doctor -> modelMapper.map(doctor, DoctorResponseDto.class))
+                .orElseThrow(()-> new RuntimeException("Doctor not found by id "+ doctorId));
+    }
 }
