@@ -88,7 +88,7 @@ public class AppointmentServices {
         appointmentRepository.delete(appointment);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('DOCTOR')")
     @Transactional
     public AppointmentResponseDto reassignDoctor(Long appointmentId, Long newDoctorId, Long loggedInUserId) throws AccessDeniedException {
         Doctor loggedInDoctor = doctorRepository
@@ -126,7 +126,7 @@ public class AppointmentServices {
         return modelMapper.map(appointment, AppointmentResponseDto.class);
     }
 
-    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('DOCTOR')")
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long userId) {
         Doctor doctor = doctorRepository.findByUser_Id(userId).orElseThrow();
 
