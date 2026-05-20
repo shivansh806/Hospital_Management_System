@@ -22,7 +22,6 @@ public class PatientController {
     private final PatientServices patientServices;
     private final InsuranceServices insuranceServices;
 
-
     @GetMapping("/my-profile")
     public ResponseEntity<PatientResponseDto> getPatientProfile(Authentication authentication){
         User user = (User) authentication.getPrincipal();
@@ -69,6 +68,4 @@ public class PatientController {
 
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
-
 }

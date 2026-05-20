@@ -26,9 +26,13 @@ public class AuthUtil {
     }
 
     public String generateAccessToken(User user){
+        java.util.List<String> rolesList = user.getRoles().stream()
+                .map(role -> role.getRole().name())
+                .toList();
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("userId", user.getId().toString())
+                .claim("roles", rolesList)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
                 .signWith(getSecretKey())
