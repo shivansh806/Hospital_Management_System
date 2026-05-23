@@ -11,6 +11,7 @@ import com.shivansh.code.hospitalManagement.repository.RoleRepository;
 import com.shivansh.code.hospitalManagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -80,9 +82,28 @@ public class AuthService {
         AuthProviderType authProviderType = authUtil.getAuthProviderTypeFromRegistrationId(registrationId);
         String providerId = authUtil.getProviderIdFromOAuth2User(oAuth2User, registrationId);
 
-        User user = userRepository.findByProviderIdAndProviderType(providerId, authProviderType).orElse(null);
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+
+        // GitHub Private Email Fallback Resolver
+        if (email == null || email.trim().isEmpty()) {
+            if (authProviderType == AuthProviderType.GITHUB) {
+                String login = oAuth2User.getAttribute("login");
+                email = (login != null ? login.toLowerCase() : "github-user") + "-" + providerId + "@users.noreply.github.com";
+                log.info("GitHub email is private. Generated secure fallback email: {}", email);
+            } else {
+                email = "oauth-" + providerId + "@hospital.com";
+                log.info("OAuth email is missing. Generated fallback email: {}", email);
+            }
+        }
+
+        // Defensively resolve missing display names
+        if (name == null || name.trim().isEmpty()) {
+            String login = oAuth2User.getAttribute("login");
+            name = (login != null) ? login : "Social User";
+        }
+
+        User user = userRepository.findByProviderIdAndProviderType(providerId, authProviderType).orElse(null);
         User emailUser = userRepository.findByUsername(email).orElse(null);
 
 

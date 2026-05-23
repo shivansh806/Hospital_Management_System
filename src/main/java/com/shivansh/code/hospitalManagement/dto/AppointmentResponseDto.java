@@ -10,4 +10,6 @@ public class AppointmentResponseDto {
     private String reason;
     private String doctorName;
     private String doctorSpecialization;
+    private String patientName;
+    private String patientGender;
 }
