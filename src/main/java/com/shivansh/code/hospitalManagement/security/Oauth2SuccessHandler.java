@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,10 @@ public class Oauth2SuccessHandler  implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
     private final ObjectMapper objectMapper;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -33,7 +38,7 @@ public class Oauth2SuccessHandler  implements AuthenticationSuccessHandler {
 
         LoginResponseDto loginResponse = authService.handleOAuth2LoginRequest(oAuth2User,registrationId);
 
-        String frontendRedirectUrl = "http://localhost:5173/oauth2/redirect?token=" 
+        String frontendRedirectUrl = frontendUrl + "/oauth2/redirect?token=" 
                 + loginResponse.getAccessToken() 
                 + "&refreshToken=" + loginResponse.getRefreshToken() 
                 + "&userId=" + loginResponse.getUserId();

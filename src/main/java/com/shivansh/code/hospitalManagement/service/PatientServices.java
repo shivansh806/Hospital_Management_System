@@ -5,7 +5,7 @@ import com.shivansh.code.hospitalManagement.dto.UpdatePatientProfileRequestDto;
 import com.shivansh.code.hospitalManagement.entity.Patient;
 import com.shivansh.code.hospitalManagement.repository.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -59,6 +59,7 @@ public class PatientServices {
             patient.setBirthDate(request.getBirthDate());
         }
 
-        return modelMapper.map(patient, PatientResponseDto.class);
+        Patient savedPatient = patientRepository.save(patient);
+        return modelMapper.map(savedPatient, PatientResponseDto.class);
     }
 }

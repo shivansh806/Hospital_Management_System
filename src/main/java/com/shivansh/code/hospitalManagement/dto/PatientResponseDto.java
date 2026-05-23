@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class PatientResponseDto {
     private Long id;
     private String name;
+    private String email;
     private String gender;
     private LocalDate birthDate;
     private BloodGroup bloodGroup;
