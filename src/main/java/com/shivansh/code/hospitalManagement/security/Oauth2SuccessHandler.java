@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class Oauth2SuccessHandler  implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
@@ -38,11 +40,14 @@ public class Oauth2SuccessHandler  implements AuthenticationSuccessHandler {
 
         LoginResponseDto loginResponse = authService.handleOAuth2LoginRequest(oAuth2User,registrationId);
 
+        log.info("[OAuth2 Success Handler] Auth successful. Injected app.frontend.url: {}", frontendUrl);
+
         String frontendRedirectUrl = frontendUrl + "/oauth2/redirect?token=" 
                 + loginResponse.getAccessToken() 
                 + "&refreshToken=" + loginResponse.getRefreshToken() 
                 + "&userId=" + loginResponse.getUserId();
                 
+        log.info("[OAuth2 Success Handler] Redirecting browser to: {}", frontendRedirectUrl);
         response.sendRedirect(frontendRedirectUrl);
     }
 }
