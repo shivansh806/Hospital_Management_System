@@ -3,8 +3,14 @@
 A secure and scalable Hospital Management REST API built using Spring Boot, Spring Security, JWT, OAuth2, and MySQL.
 
 The system provides authentication, role-based authorization, patient profile management, doctor management, appointment workflows, insurance handling, and secure resource ownership validation.
-
 ---
+## 🎥 Demo
+
+**Doctor & Admin Flow** — login, RBAC in action
+https://github.com/user-attachments/assets/2f17b475-c67b-47b0-95e9-e9e052a80391
+
+**Patient Flow** — registration, login, appointment booking
+https://github.com/user-attachments/assets/212b0234-62a2-4f07-a184-ae70782dbcbf
 
 ## 📋 Table of Contents
 
